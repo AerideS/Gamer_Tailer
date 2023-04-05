@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -15,12 +16,12 @@ public class Player : MonoBehaviour
     }
 
 
-    void Update()
+/*    void Update()
     {
         //GetAxis를 GetAxisRaw로 변경
         inputVec.x = Input.GetAxisRaw("Horizontal");
         inputVec.y = Input.GetAxisRaw("Vertical");
-    }
+    }*/
 
     //물리 연산 프레임마다 호출되는 생명주기 함수
     private void FixedUpdate()
@@ -36,6 +37,12 @@ public class Player : MonoBehaviour
 
         //rlgid바디의 위치에서 더해줘야한다.
         rigid.MovePosition(rigid.position+ nextVec);
+
+    }
+
+    void OnMove(InputValue value)
+    {
+        inputVec = value.Get<Vector2>();
 
     }
 }
