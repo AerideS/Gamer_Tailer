@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
     }
     private void LateUpdate()
     {
-        //순수한 크기값 Speed 애니메이터 변수에 넣어주기
+        //순수한 크기 값 Speed 애니메이터 변수에 넣어주기
         anim.SetFloat("Speed",inputVec.magnitude);
 
         if (inputVec.x != 0)
