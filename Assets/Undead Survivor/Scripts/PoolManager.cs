@@ -21,8 +21,6 @@ public class PoolManager : MonoBehaviour
         }
 
         //Debug.Log(pools.Length);
-
-
     }
     public GameObject Get(int index)
     {
