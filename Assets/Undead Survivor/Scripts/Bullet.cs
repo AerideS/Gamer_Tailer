@@ -15,9 +15,9 @@ public class Bullet : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
     }
 
-    public void Init(float daamage,int per,Vector3 dir)
+    public void Init(float damage, int per,Vector3 dir)
     {
-        this.damage = daamage;
+        this.damage = damage;
         this.per = per; 
 
         if(per > -1)
