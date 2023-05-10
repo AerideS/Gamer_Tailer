@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -34,6 +35,9 @@ public class Player : MonoBehaviour
     //물리 연산 프레임마다 호출되는 생명주기 함수
     private void FixedUpdate()
     {
+
+        if (!GameManager.instance.isLive)
+            return;
         //1. 힘을 준다.
         //rigid.AddForce(inputVec);
 
