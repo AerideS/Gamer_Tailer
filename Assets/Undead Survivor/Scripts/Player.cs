@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public float speed;
     public Scanner scanner;
     public Hand[] hands;
+    public RuntimeAnimatorController[] animCon;
 
     Rigidbody2D rigid;
     SpriteRenderer spriter;
@@ -24,13 +25,18 @@ public class Player : MonoBehaviour
         hands = GetComponentsInChildren<Hand>(true);
     }
 
-
-/*    void Update()
+    private void OnEnable()
     {
-        //GetAxis를 GetAxisRaw로 변경
-        inputVec.x = Input.GetAxisRaw("Horizontal");
-        inputVec.y = Input.GetAxisRaw("Vertical");
-    }*/
+        speed *= Character.Speed;
+        anim.runtimeAnimatorController = animCon[GameManager.instance.playerId];
+    }
+
+    /*    void Update()
+        {
+            //GetAxis를 GetAxisRaw로 변경
+            inputVec.x = Input.GetAxisRaw("Horizontal");
+            inputVec.y = Input.GetAxisRaw("Vertical");
+        }*/
 
     //물리 연산 프레임마다 호출되는 생명주기 함수
     private void FixedUpdate()
