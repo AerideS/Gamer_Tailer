@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,9 @@ public class GameManager : MonoBehaviour
     public bool isLive;
     public float gameTime;
     public float maxGameTime = 2 * 10f;
+    public GameObject[] Stages;
+    public int stageIndex;
+
     [Header("# Player Info")]
     public int playerId;
     public float health;
@@ -24,12 +28,15 @@ public class GameManager : MonoBehaviour
     public Player player;
     public PoolManager pool;
     public LevelUp uiLevelUp;
+    public Transform uiJoy;
     public Result uiResult;
     public GameObject enemyCleaner;
+   
 
     void Awake()
     {
         instance = this;
+        Application.targetFrameRate = 60;
     }
 
     public void GameStart(int id)
@@ -56,7 +63,7 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
 
         uiResult.gameObject.SetActive(true);
         uiResult.Lose();
@@ -76,10 +83,11 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         enemyCleaner.SetActive(true);
+        
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
 
-        uiResult.gameObject.SetActive(true);
+        uiResult.gameObject. SetActive(true);
         uiResult.Win();
         Stop();
 
@@ -90,6 +98,11 @@ public class GameManager : MonoBehaviour
     public void GameRetry()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void GameQuit()
+    {
+        Application.Quit();
     }
 
 
@@ -125,11 +138,38 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         Time.timeScale = 0;
+        uiJoy.localScale = Vector3.zero;
     }
     public void Resume()
     {
         isLive = true;
         Time.timeScale = 1;
+        uiJoy.localScale = Vector3.one;
     }
+
+    public void NextStage()
+    {
+        //스테이지 변경
+        if(stageIndex< Stages.Length)
+        {
+            Stages[stageIndex].SetActive(false);
+            stageIndex++;
+            Stages[stageIndex].SetActive(true);
+            uiResult.gameObject.SetActive(false);
+            player.gameObject.SetActive(true);
+            enemyCleaner.gameObject.SetActive(false);
+            gameTime = 0;
+            maxGameTime = stageIndex * 2*maxGameTime;
+            player.transform.position = Vector3.zero;
+
+
+            Resume();
+            AudioManager.instance.PlayBgm(true);
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
+        }
+
+
+    }
+
 
 }

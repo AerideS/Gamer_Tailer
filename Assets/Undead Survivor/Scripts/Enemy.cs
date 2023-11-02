@@ -99,6 +99,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator KnockBack()
     {
+
         //yield return null;  // 1프레임 쉬기
         //yield return new WaitForSeconds(2f);    // 2초 쉬기
         yield return wait;//하나의 물리 프레임을 딜레이 주기
