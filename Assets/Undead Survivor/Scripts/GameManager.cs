@@ -24,7 +24,6 @@ public class GameManager : MonoBehaviour
     public float gameTime;
     public float maxGameTime = 2 * 10f;
     public GameObject[] Stages;
-    public int stageIndex;
 
     [Header("# Player Info")]
     public int playerId;
@@ -42,6 +41,14 @@ public class GameManager : MonoBehaviour
     public Transform uiJoy;
     public Result uiResult;
     public GameObject enemyCleaner;
+
+    [Header("# 학습을 위해 저장할 데이터")]
+    public float avgEpvLevel;
+    public float avgAliveTime;
+    public int hitTime;
+    public int tryCount = 1;
+    public int stageIndex;
+
 
     // DB 쓰기 함수
     void writeData()
