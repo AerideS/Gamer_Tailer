@@ -43,11 +43,9 @@ public class GameManager : MonoBehaviour
     public Result uiResult;
     public GameObject enemyCleaner;
 
-    void Awake()
+    // DB 쓰기 함수
+    void writeData()
     {
-        instance = this;
-        Application.targetFrameRate = 60;
-
         // DB 초기화
         db = FirebaseFirestore.DefaultInstance;
 
@@ -73,6 +71,16 @@ public class GameManager : MonoBehaviour
             // 데이터 카운트 +1
             Debug.Log(string.Format("data_count : {0}", data_count));
         });
+
+        return;
+    }
+
+    void Awake()
+    {
+        instance = this;
+        Application.targetFrameRate = 60;
+
+        writeData();
     }
 
     public void GameStart(int id)
