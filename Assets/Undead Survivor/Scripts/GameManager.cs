@@ -4,8 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// Firebase.Firestore 사용
+using Firebase.Firestore;
+using Firebase.Extensions;
+
+
 public class GameManager : MonoBehaviour
 {
+    FirebaseFirestore db;
 
     public static GameManager instance;
     [Header("# Game Control")]
@@ -37,6 +43,20 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
         Application.targetFrameRate = 60;
+
+        // DB 초기화
+        db = FirebaseFirestore.DefaultInstance;
+
+        // DB 쓰기 시험
+        DocumentReference docRef = db.Collection("data").Document("2");
+        Dictionary<string, object> dat = new Dictionary<string, object>
+{
+        { "health", maxHealth },
+        { "playerId", playerId },
+};
+        docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
+            Debug.Log("Added data to the alovelace document in the users collection.");
+        });
     }
 
     public void GameStart(int id)
