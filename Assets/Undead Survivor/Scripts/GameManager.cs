@@ -51,31 +51,19 @@ public class GameManager : MonoBehaviour
         // DB 초기화
         db = FirebaseFirestore.DefaultInstance;
 
-        // 데이터의 개수 가져오기
-        DocumentReference countRef = db.Collection("counts").Document("count");
-        countRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        // 식별자 생성
+        int length = 8;
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        System.Random random = new System.Random();
+        char[] randomChars = new char[length];
+
+        for (int i = 0; i < length; i++)
         {
-            DocumentSnapshot snapshot = task.Result;
-            if (snapshot.Exists)
-            {
-                Debug.Log(String.Format("Document data for {0} document:", snapshot.Id));
-                Dictionary<string, object> count = snapshot.ToDictionary();
-
-                foreach (KeyValuePair<string, object> cnt in count)
-                {
-                    data_count = Convert.ToInt32(cnt.Value);
-                    Debug.Log(string.Format("data_count : {0}", data_count));
-                }
-            }
-            else
-            {
-                //Debug.Log(String.Format("Document {0} does not exist!", snapshot.Id));
-            }
-        });
-
+            randomChars[i] = chars[random.Next(chars.Length)];
+        }
 
         // DB 쓰기
-        DocumentReference docRef = db.Collection("data").Document(data_count.ToString());
+        DocumentReference docRef = db.Collection("data").Document(new string(randomChars));
         Dictionary<string, object> dat = new Dictionary<string, object>
 {
         { "health", maxHealth },
@@ -84,21 +72,6 @@ public class GameManager : MonoBehaviour
         docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
             // 데이터 카운트 +1
             Debug.Log(string.Format("data_count : {0}", data_count));
-        });
-
-
-
-        // DB 업데이트
-        DocumentReference cntRef = db.Collection("counts").Document("count");
-        data_count = data_count + 1;
-        Dictionary<string, object> updates = new Dictionary<string, object>
-{
-        { "count", data_count }
-};
-
-        cntRef.UpdateAsync(updates).ContinueWithOnMainThread(task => {
-            //Debug.Log("Updated the Capital field of the new-city-id document in the cities collection.");
-            //Debug.Log(string.Format("Int number: {0}", data_count));
         });
     }
 
@@ -146,11 +119,11 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         enemyCleaner.SetActive(true);
-        
+
 
         yield return new WaitForSeconds(0.3f);
 
-        uiResult.gameObject. SetActive(true);
+        uiResult.gameObject.SetActive(true);
         uiResult.Win();
         Stop();
 
@@ -186,10 +159,10 @@ public class GameManager : MonoBehaviour
     public void GetExp()
     {
         if (!isLive)
-            return ;
+            return;
 
         exp++;
-        if (exp == nextExp[Mathf.Min(level,nextExp.Length-1)])
+        if (exp == nextExp[Mathf.Min(level, nextExp.Length - 1)])
         {
             level++;
             exp = 0;
@@ -213,7 +186,7 @@ public class GameManager : MonoBehaviour
     public void NextStage()
     {
         //스테이지 변경
-        if(stageIndex< Stages.Length)
+        if (stageIndex < Stages.Length)
         {
             Stages[stageIndex].SetActive(false);
             stageIndex++;
@@ -222,7 +195,7 @@ public class GameManager : MonoBehaviour
             player.gameObject.SetActive(true);
             enemyCleaner.gameObject.SetActive(false);
             gameTime = 0;
-            maxGameTime = stageIndex * 2*maxGameTime;
+            maxGameTime = stageIndex * 2 * maxGameTime;
             player.transform.position = Vector3.zero;
 
 
