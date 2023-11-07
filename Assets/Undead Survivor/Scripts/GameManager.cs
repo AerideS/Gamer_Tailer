@@ -7,11 +7,16 @@ using UnityEngine.SceneManagement;
 // Firebase.Firestore 사용
 using Firebase.Firestore;
 using Firebase.Extensions;
+using System.Threading.Tasks;
+using Unity.Collections.LowLevel.Unsafe;
+
 
 
 public class GameManager : MonoBehaviour
 {
+    // DB 인스턴스, 자료의 개수
     FirebaseFirestore db;
+    int data_count;
 
     public static GameManager instance;
     [Header("# Game Control")]
@@ -37,7 +42,6 @@ public class GameManager : MonoBehaviour
     public Transform uiJoy;
     public Result uiResult;
     public GameObject enemyCleaner;
-   
 
     void Awake()
     {
@@ -47,15 +51,54 @@ public class GameManager : MonoBehaviour
         // DB 초기화
         db = FirebaseFirestore.DefaultInstance;
 
-        // DB 쓰기 시험
-        DocumentReference docRef = db.Collection("data").Document("2");
+        // 데이터의 개수 가져오기
+        DocumentReference countRef = db.Collection("counts").Document("count");
+        countRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        {
+            DocumentSnapshot snapshot = task.Result;
+            if (snapshot.Exists)
+            {
+                Debug.Log(String.Format("Document data for {0} document:", snapshot.Id));
+                Dictionary<string, object> count = snapshot.ToDictionary();
+
+                foreach (KeyValuePair<string, object> cnt in count)
+                {
+                    data_count = Convert.ToInt32(cnt.Value);
+                    Debug.Log(string.Format("data_count : {0}", data_count));
+                }
+            }
+            else
+            {
+                //Debug.Log(String.Format("Document {0} does not exist!", snapshot.Id));
+            }
+        });
+
+
+        // DB 쓰기
+        DocumentReference docRef = db.Collection("data").Document(data_count.ToString());
         Dictionary<string, object> dat = new Dictionary<string, object>
 {
         { "health", maxHealth },
         { "playerId", playerId },
 };
         docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
-            Debug.Log("Added data to the alovelace document in the users collection.");
+            // 데이터 카운트 +1
+            Debug.Log(string.Format("data_count : {0}", data_count));
+        });
+
+
+
+        // DB 업데이트
+        DocumentReference cntRef = db.Collection("counts").Document("count");
+        data_count = data_count + 1;
+        Dictionary<string, object> updates = new Dictionary<string, object>
+{
+        { "count", data_count }
+};
+
+        cntRef.UpdateAsync(updates).ContinueWithOnMainThread(task => {
+            //Debug.Log("Updated the Capital field of the new-city-id document in the cities collection.");
+            //Debug.Log(string.Format("Int number: {0}", data_count));
         });
     }
 
