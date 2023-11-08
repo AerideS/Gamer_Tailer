@@ -12,6 +12,9 @@ public class Player : MonoBehaviour
     public Hand[] hands;
     public RuntimeAnimatorController[] animCon;
 
+    // 히트 카운트
+    public int hitCount;
+
     Rigidbody2D rigid;
     SpriteRenderer spriter;
     Animator anim;
@@ -23,6 +26,8 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         scanner = GetComponent<Scanner>();
         hands = GetComponentsInChildren<Hand>(true);
+
+        hitCount = 0; // 히트 카운트 초기화
     }
 
     private void OnEnable()
@@ -79,7 +84,7 @@ public class Player : MonoBehaviour
         if (!GameManager.instance.isLive)
             return;
         GameManager.instance.health -= Time.deltaTime * 10;
-
+        hitCount++;
         if (GameManager.instance.health<0)
         {
             for(int index = 2; index < transform.childCount; index++)

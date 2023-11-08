@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
     public float avgEpvLevel;
     public float avgAliveTime;
     public int hitTime;
-    public int tryCount = 1;
+    public static int tryCount = 1;
     public int stageIndex;
 
 
@@ -71,8 +71,8 @@ public class GameManager : MonoBehaviour
         DocumentReference docRef = db.Collection("data").Document(new string(randomChars));
         Dictionary<string, object> dat = new Dictionary<string, object>
 {
-        { "health", maxHealth },
-        { "playerId", playerId },
+        { "hitCount", player.hitCount },
+        { "stageIndex", stageIndex },
 };
         docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
             // 데이터 카운트 +1
@@ -86,8 +86,6 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
         Application.targetFrameRate = 60;
-
-        writeData();
     }
 
     public void GameStart(int id)
@@ -107,6 +105,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        tryCount++;
         StartCoroutine(GameOverRoutine());
     }
 
@@ -200,6 +199,8 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
+        writeData();
+
         //스테이지 변경
         if (stageIndex < Stages.Length)
         {
