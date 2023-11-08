@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     [Header("# 학습을 위해 저장할 데이터")]
     public string id;
     public float avgEpvLevel;
+    public float totalAliveTime;
     public float avgAliveTime;
     public int hitTime;
     public static int tryCount = 1;
@@ -78,6 +79,8 @@ public class GameManager : MonoBehaviour
 {
         { "hitCount", player.hitCount },
         { "stageIndex", stageIndex },
+            {"tryCount", tryCount },
+            {"avgAliveTime", avgAliveTime }
 };
         docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
             // 데이터 카운트 +1
@@ -100,6 +103,7 @@ public class GameManager : MonoBehaviour
         playerId = id;
         maxHealth = 100;
         health = maxHealth;
+        totalAliveTime = 0;
 
         player.gameObject.SetActive(true);
         uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
@@ -113,6 +117,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         tryCount++;
+        totalAliveTime += gameTime;
         StartCoroutine(GameOverRoutine());
     }
 
@@ -206,6 +211,8 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
+        totalAliveTime = gameTime;
+        avgAliveTime = totalAliveTime / tryCount;
         writeData(id, stageIndex);
         //스테이지 변경
         if (stageIndex < Stages.Length)
