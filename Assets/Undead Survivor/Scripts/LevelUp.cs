@@ -5,7 +5,7 @@ using UnityEngine;
 public class LevelUp : MonoBehaviour
 {
     RectTransform rect;
-    Item[] items;
+    public Item[] items;
 
 
     // Start is called before the first frame update

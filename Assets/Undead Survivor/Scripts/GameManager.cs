@@ -49,15 +49,19 @@ public class GameManager : MonoBehaviour
     public Transform uiJoy;
     public Result uiResult;
     public GameObject enemyCleaner;
+    // 평균 레벨을 가져오기 위해
+    public LevelUp levelUp;
 
     [Header("# 학습을 위해 저장할 데이터")]
     public string id;
+    public float totalEpvLevel;
     public float avgEpvLevel;
     public float totalAliveTime;
     public float avgAliveTime;
     public int hitTime;
     public static int tryCount = 1;
     public int stageIndex;
+    
 
     string makeIdentifier()
     {
@@ -85,10 +89,11 @@ public class GameManager : MonoBehaviour
             .Collection(randomChars).Document(stageIndex.ToString());
         Dictionary<string, object> dat = new Dictionary<string, object>
 {
-        { "hitCount", player.hitCount },
-        { "stageIndex", stageIndex },
-        {"tryCount", tryCount },
-        {"avgAliveTime", avgAliveTime}
+            { "hitCount", player.hitCount },
+            { "stageIndex", stageIndex },
+            {"tryCount", tryCount },
+            {"avgAliveTime", avgAliveTime},
+            {"avgEpvLevel", avgEpvLevel }
 };
         docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
             // 데이터 카운트 +1
@@ -127,6 +132,7 @@ public class GameManager : MonoBehaviour
         maxHealth = 100;
         health = maxHealth;
         totalAliveTime = 0;
+        totalEpvLevel = 0;
 
         player.gameObject.SetActive(true);
         uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
@@ -237,7 +243,19 @@ public class GameManager : MonoBehaviour
         // titalAliveTime, avgAliveTime 초기화 후 데이터 쓰기
         totalAliveTime = gameTime;
         avgAliveTime = totalAliveTime / tryCount;
+
+        // 장비 평균레벨 구하기
+        foreach (Item item in levelUp.items)
+        {
+            totalEpvLevel += item.level;
+        }
+
+        avgEpvLevel = totalEpvLevel / levelUp.items.Length;
+
         writeData(id, stageIndex);
+
+        
+
         //스테이지 변경
         if (stageIndex < Stages.Length)
         {

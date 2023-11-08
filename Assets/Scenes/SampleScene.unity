@@ -287,6 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de66aaded3f729b4896c5e58f3807748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  items: []
 --- !u!1 &47285093
 GameObject:
   m_ObjectHideFlags: 0
@@ -34891,8 +34892,11 @@ MonoBehaviour:
   uiJoy: {fileID: 355747338}
   uiResult: {fileID: 1963359934}
   enemyCleaner: {fileID: 61439678}
+  levelUp: {fileID: 26527146}
   id: 
+  totalEpvLevel: 0
   avgEpvLevel: 0
+  totalAliveTime: 0
   avgAliveTime: 0
   hitTime: 0
   stageIndex: 0
