@@ -10,6 +10,11 @@ using Firebase.Extensions;
 using System.Threading.Tasks;
 using Unity.Collections.LowLevel.Unsafe;
 
+// 서버 사용
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+
 
 
 public class GameManager : MonoBehaviour
@@ -17,6 +22,9 @@ public class GameManager : MonoBehaviour
     // DB 인스턴스, 자료의 개수
     FirebaseFirestore db;
     int data_count;
+
+    // TcpClient Socket
+    private TcpClient socketConnection;
 
     public static GameManager instance;
     [Header("# Game Control")]
@@ -79,8 +87,8 @@ public class GameManager : MonoBehaviour
 {
         { "hitCount", player.hitCount },
         { "stageIndex", stageIndex },
-            {"tryCount", tryCount },
-            {"avgAliveTime", avgAliveTime }
+        {"tryCount", tryCount },
+        {"avgAliveTime", avgAliveTime}
 };
         docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
             // 데이터 카운트 +1
@@ -90,12 +98,27 @@ public class GameManager : MonoBehaviour
         return;
     }
 
+    private void ConnectToTcpServer()
+    {
+        try
+        {
+            socketConnection = new TcpClient("127.0.0.1", 8080);    
+        }
+        catch(Exception e)
+        {
+            Debug.Log("On client connect exception " + e);
+        }
+    }
+
     void Awake()
     {
         // DB 사용자 ID
         id = makeIdentifier();
         instance = this;
         Application.targetFrameRate = 60;
+
+        // 서버 연결
+        ConnectToTcpServer();
     }
 
     public void GameStart(int id)
@@ -211,6 +234,7 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
+        // titalAliveTime, avgAliveTime 초기화 후 데이터 쓰기
         totalAliveTime = gameTime;
         avgAliveTime = totalAliveTime / tryCount;
         writeData(id, stageIndex);
