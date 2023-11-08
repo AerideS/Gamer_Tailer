@@ -43,19 +43,15 @@ public class GameManager : MonoBehaviour
     public GameObject enemyCleaner;
 
     [Header("# 학습을 위해 저장할 데이터")]
+    public string id;
     public float avgEpvLevel;
     public float avgAliveTime;
     public int hitTime;
     public static int tryCount = 1;
     public int stageIndex;
 
-
-    // DB 쓰기 함수
-    void writeData()
+    string makeIdentifier()
     {
-        // DB 초기화
-        db = FirebaseFirestore.DefaultInstance;
-
         // 식별자 생성
         int length = 8;
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -66,9 +62,18 @@ public class GameManager : MonoBehaviour
         {
             randomChars[i] = chars[random.Next(chars.Length)];
         }
+        return new string(randomChars);
+    }
 
+    // DB 쓰기 함수
+    void writeData(string randomChars, int stageIndex)
+    {
+        // DB 초기화
+        db = FirebaseFirestore.DefaultInstance;
         // DB 쓰기
-        DocumentReference docRef = db.Collection("data").Document(new string(randomChars));
+        DocumentReference docRef = db
+            .Collection(("data")).Document(randomChars)
+            .Collection(randomChars).Document(stageIndex.ToString());
         Dictionary<string, object> dat = new Dictionary<string, object>
 {
         { "hitCount", player.hitCount },
@@ -84,6 +89,8 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        // DB 사용자 ID
+        id = makeIdentifier();
         instance = this;
         Application.targetFrameRate = 60;
     }
@@ -199,8 +206,7 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
-        writeData();
-
+        writeData(id, stageIndex);
         //스테이지 변경
         if (stageIndex < Stages.Length)
         {

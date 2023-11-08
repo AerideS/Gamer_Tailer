@@ -1173,6 +1173,7 @@ MonoBehaviour:
   animCon:
   - {fileID: 9100000, guid: 56f1be874b91de146bb1b04ce036219e, type: 2}
   - {fileID: 22100000, guid: 1e1e5fea9c9915144990642fcdb35ab9, type: 2}
+  hitCount: 0
 --- !u!114 &169341576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34873,11 +34874,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLive: 0
   gameTime: 0
-  maxGameTime: 100
+  maxGameTime: 10
   Stages:
   - {fileID: 1934035695}
   - {fileID: 2024083865}
-  stageIndex: 0
   playerId: 0
   health: 0
   maxHealth: 100
@@ -34891,6 +34891,11 @@ MonoBehaviour:
   uiJoy: {fileID: 355747338}
   uiResult: {fileID: 1963359934}
   enemyCleaner: {fileID: 61439678}
+  id: 
+  avgEpvLevel: 0
+  avgAliveTime: 0
+  hitTime: 0
+  stageIndex: 0
 --- !u!4 &974402432
 Transform:
   m_ObjectHideFlags: 0
