@@ -34879,6 +34879,8 @@ MonoBehaviour:
   Stages:
   - {fileID: 1934035695}
   - {fileID: 2024083865}
+  - {fileID: 514502107}
+  - {fileID: 144878898}
   playerId: 0
   health: 0
   maxHealth: 100

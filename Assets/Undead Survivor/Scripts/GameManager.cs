@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
     public LevelUp levelUp;
 
     [Header("# 학습을 위해 저장할 데이터")]
-    public string id;
+    public string idf;
     public float totalEpvLevel;
     public float avgEpvLevel;
     public float totalAliveTime;
@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         // DB 사용자 ID
-        id = makeIdentifier();
+        idf = makeIdentifier();
         instance = this;
         Application.targetFrameRate = 60;
 
@@ -252,7 +252,7 @@ public class GameManager : MonoBehaviour
 
         avgEpvLevel = totalEpvLevel / levelUp.items.Length;
 
-        writeData(id, stageIndex);
+        writeData(idf, stageIndex);
 
         
 
