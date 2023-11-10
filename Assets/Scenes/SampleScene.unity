@@ -34875,7 +34875,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLive: 0
   gameTime: 0
-  maxGameTime: 10
+  maxGameTime: 1
   Stages:
   - {fileID: 1934035695}
   - {fileID: 2024083865}

@@ -161,22 +161,47 @@ public class GameManager : MonoBehaviour
 
     public void GameStart(int id)
     {
-        if(stageStaticIndex == 0) { 
-        playerId = id;
-        maxHealth = 100;
-        health = maxHealth;
+        if (stageStaticIndex == 0)
+        {
+            playerId = id;
+            maxHealth = 100;
+            health = maxHealth;
 
-        gameTime = 0;
-        isLive = true;
+            gameTime = 0;
+            isLive = true;
 
-        player.gameObject.SetActive(true);
-        uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
+            player.gameObject.SetActive(true);
+            uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
 
-        Resume();
+            Resume();
 
-        AudioManager.instance.PlayBgm(true);
-        AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
-            }
+            AudioManager.instance.PlayBgm(true);
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
+        }
+        else
+        {
+            playerId = id;
+            maxHealth = 100;
+            health = maxHealth;
+
+            gameTime = 0;
+            isLive = true;
+
+            stageIndex = stageStaticIndex;
+            Stages[stageIndex].SetActive(true);
+            player.gameObject.SetActive(true);
+
+            uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
+
+            enemyCleaner.gameObject.SetActive(false);
+            gameTime = 0;
+            maxGameTime = Mathf.Pow(1.2f, stageIndex+1) * maxGameTime;
+            player.transform.position = Vector3.zero;
+
+            Resume();
+            AudioManager.instance.PlayBgm(true);
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
+        }
     }
 
     public void GameOver()
@@ -204,9 +229,6 @@ public class GameManager : MonoBehaviour
     IEnumerator GameOverRoutine()
     {
         isLive = false;
-
-        uiResult.gameObject.SetActive(true);
-
         yield return new WaitForSeconds(0.1f);
         GameRetry();
 
@@ -321,7 +343,7 @@ public class GameManager : MonoBehaviour
         if (stageIndex < Stages.Length)
         {
             Stages[stageIndex].SetActive(false);
-            stageIndex++;
+            stageIndex++; stageStaticIndex++;
             Stages[stageIndex].SetActive(true);
             uiResult.gameObject.SetActive(false);
             player.gameObject.SetActive(true);
