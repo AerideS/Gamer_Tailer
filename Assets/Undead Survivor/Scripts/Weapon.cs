@@ -53,6 +53,7 @@ public class Weapon : MonoBehaviour
 
     public void LevelUp(float damage, int count)
     {
+       
         this.damage = damage * Character.Damage;
         this.count += count;
 
@@ -64,7 +65,7 @@ public class Weapon : MonoBehaviour
     }
 
     public void Init(ItemData data)
-    {
+    {   
         // Basic Set
         name = "Weapon " + data.itemId;
         transform.parent = player.transform;

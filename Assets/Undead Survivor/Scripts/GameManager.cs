@@ -254,7 +254,26 @@ public class GameManager : MonoBehaviour
         {
             player.transform.GetChild(index).gameObject.SetActive(true);
         }
-        weapon.count= 0;
+        Weapon[] weapons = player.transform.GetComponentsInChildren<Weapon>();
+
+        foreach (Weapon weapon in weapons)
+        {
+            weapon.count = 3;
+            Bullet[] bullets = weapon.GetComponentsInChildren<Bullet>();
+            for(int i=bullets.Length-1; i >= 3; i--)
+            {
+                Destroy(bullets[i].gameObject) ;
+            }
+            //for (int index = 0; index < weapon.count; index++)
+            //{
+            //    //회전 코드
+            //    Vector3 rotVec = Vector3.forward * 360 * index / weapon.count;
+            //    bullets[index].transform.Rotate(rotVec);
+            //    bullets[index].transform.Translate(bullets[index].transform.up * 1.5f, Space.World);
+
+            //}
+        }
+        
         enemyCleaner.SetActive(false);
         Resume();
 
