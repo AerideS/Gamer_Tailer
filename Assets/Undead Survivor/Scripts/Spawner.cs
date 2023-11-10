@@ -15,7 +15,7 @@ public class Spawner : MonoBehaviour
     private void Awake()
     {
         spawnPoint=GetComponentsInChildren<Transform>();
-        levelTime = GameManager.instance.maxGameTime / spawnData.Length;
+        levelTime = GameManager.instance.maxGameTime;
     }
 
     void Update()
@@ -57,7 +57,11 @@ public class Spawner : MonoBehaviour
             }
             else
             {
-                enemy = GameManager.instance.pool.Get(level +2+ GameManager.instance.stageIndex);    //SpawnData ¿ŒΩ∫∆Â≈Õ√¢
+                enemy = GameManager.instance.pool.Get(level +2+ GameManager.instance.stageIndex-1);    //SpawnData ¿ŒΩ∫∆Â≈Õ√¢
+                if((level + 2 + GameManager.instance.stageIndex) == GameManager.instance.pool.prefabs.Length)
+                {
+                    enemy = GameManager.instance.pool.Get(GameManager.instance.pool.prefabs.Length-1);    //SpawnData ¿ŒΩ∫∆Â≈Õ√¢
+                }
             }
             enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
             enemy.GetComponent<Enemy_new>().Init(spawnData[level]);

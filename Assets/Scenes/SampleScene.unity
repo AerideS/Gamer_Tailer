@@ -909,7 +909,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.2
-  m_Text: "\uC5B8\uB370\uB4DC 10\uB9C8\uB9AC\n\uCC98\uCE58 \uC2DC \uD569\uB958"
+  m_Text: "\uC5B8\uB370\uB4DC 150\uB9C8\uB9AC\n\uCC98\uCE58 \uC2DC \uD569\uB958"
 --- !u!222 &151790053
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11992,10 +11992,10 @@ MonoBehaviour:
   - {fileID: 7573831300888823078, guid: 66adb57caf6d74640bc11efbc4b2c4f5, type: 3}
   - {fileID: 7573831300888823078, guid: 4c1b05170f52045f1a6d3ac26f923977, type: 3}
   - {fileID: 7573831300888823078, guid: 575496488fb9a45b4b9e4c01f348efa7, type: 3}
-  - {fileID: 7573831300888823078, guid: 268be89ae4bd44475bbe2a77765347b8, type: 3}
-  - {fileID: 7573831300888823078, guid: d32b76f2ce06d42fea0991f3bb43b82d, type: 3}
-  - {fileID: 2477659901668774560, guid: 1eb4d5a605cc64a55ae8fc262a67ed19, type: 3}
-  - {fileID: 4900819023942909530, guid: 078f0fc1e64834668934a84f98dfbb0c, type: 3}
+  - {fileID: 7573831300888823078, guid: 06c143a0ccb9c2a4da7f4771c971266e, type: 3}
+  - {fileID: 7573831300888823078, guid: d0308b2554711854cb6adcee9986b1e2, type: 3}
+  - {fileID: 2477659901668774560, guid: 5a6b9ce2a9412224e9d77fd4ea35f53a, type: 3}
+  - {fileID: 4900819023942909530, guid: 400d50bb54679834ca546b86db2f7503, type: 3}
 --- !u!4 &552084243
 Transform:
   m_ObjectHideFlags: 0
@@ -34895,7 +34895,7 @@ MonoBehaviour:
   uiResult: {fileID: 1963359934}
   enemyCleaner: {fileID: 61439678}
   levelUp: {fileID: 26527146}
-  id: 
+  idf: 
   totalEpvLevel: 0
   avgEpvLevel: 0
   totalAliveTime: 0
