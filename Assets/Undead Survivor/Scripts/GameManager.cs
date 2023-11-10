@@ -283,6 +283,10 @@ public class GameManager : MonoBehaviour
         if (gameTime > maxGameTime)
         {
             gameTime = maxGameTime;
+            if(stageStaticIndex == 3)
+            {
+                NextStage();
+            }
             GameVictory();
         }
     }
@@ -337,10 +341,24 @@ public class GameManager : MonoBehaviour
         // 스테이지 클리어까지 평균 공격받은 횟수
         avgHitCount = totalHitCount / totaltryCount;
 
+        // 다음 라운드에서 모두 초기화
+        totalHitCount = 0;
+        totalAliveTime = 0;
+        totalEpvLevel = 0;
+        totalHitCount = 0;
+        totaltryCount = 1;
+
         writeData(idf, stageIndex);
 
+        if(stageStaticIndex == 3)
+        {
+            stageStaticIndex = 0;
+            isStageFirst = true;
+            return;
+        }
+
         //스테이지 변경
-        if (stageIndex < Stages.Length)
+        if (stageStaticIndex <= 2)
         {
             Stages[stageIndex].SetActive(false);
             stageIndex++; stageStaticIndex++;
