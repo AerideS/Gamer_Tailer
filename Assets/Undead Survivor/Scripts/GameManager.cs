@@ -58,10 +58,10 @@ public class GameManager : MonoBehaviour
     public float avgEpvLevel;
     public float totalAliveTime;
     public float avgAliveTime;
-    public int hitCount;
+    public int hitTime;
     public static int tryCount = 1;
     public int stageIndex;
-
+    
 
     string makeIdentifier()
     {
@@ -95,9 +95,9 @@ public class GameManager : MonoBehaviour
             {"avgAliveTime", avgAliveTime},
             {"avgEpvLevel", avgEpvLevel }
 };
-        docRef.SetAsync(dat).ContinueWithOnMainThread(task =>
-        {
-            Debug.Log(string.Format("Data_ID : {0}! Stage {1}",idf , stageIndex));
+        docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
+            // 데이터 카운트 +1
+            Debug.Log(string.Format("data_count : {0}", data_count));
         });
 
         return;
@@ -107,9 +107,9 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            socketConnection = new TcpClient("127.0.0.1", 8080);
+            socketConnection = new TcpClient("127.0.0.1", 8080);    
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             Debug.Log("On client connect exception " + e);
         }
@@ -266,7 +266,7 @@ public class GameManager : MonoBehaviour
 
         writeData(idf, stageIndex);
 
-        player.hitCount = 0;
+        
 
         //스테이지 변경
         if (stageIndex < Stages.Length)
@@ -289,4 +289,6 @@ public class GameManager : MonoBehaviour
 
 
     }
+
+
 }
