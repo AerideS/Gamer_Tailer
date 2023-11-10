@@ -107,7 +107,7 @@ public class Enemy_new : MonoBehaviour
         //yield return wait;//하나의 물리 프레임을 딜레이 주기
         Vector3 playerPos = GameManager.instance.player.transform.position;
         Vector3 dirVec = rect.position- playerPos;
-        rigid.AddForce(dirVec.normalized * 2000);
+        rigid.AddForce(dirVec.normalized * 100);
 
     }
 

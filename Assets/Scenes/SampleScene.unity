@@ -34876,7 +34876,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLive: 0
   gameTime: 0
-  maxGameTime: 10
+  maxGameTime: 50
   Stages:
   - {fileID: 1934035695}
   - {fileID: 2024083865}
@@ -34895,6 +34895,7 @@ MonoBehaviour:
   uiJoy: {fileID: 355747338}
   uiResult: {fileID: 1963359934}
   enemyCleaner: {fileID: 61439678}
+  weapon: {fileID: 0}
   levelUp: {fileID: 26527146}
   idf: 
   totalEpvLevel: 0
@@ -69550,7 +69551,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uB3CC\uC544\uAC00\uAE30"
+  m_Text: "\uB2E4\uC2DC\uD558\uAE30"
 --- !u!222 &1965209179
 CanvasRenderer:
   m_ObjectHideFlags: 0

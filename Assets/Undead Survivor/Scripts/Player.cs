@@ -100,8 +100,8 @@ public class Player : MonoBehaviour
             {
                 transform.GetChild(index).gameObject.SetActive(false);
             }
-
-            anim.SetTrigger("Dead");
+            anim.SetBool("Live", false);
+            //anim.SetTrigger("Dead");
             GameManager.instance.GameOver();
         }
 

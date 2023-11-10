@@ -135,15 +135,14 @@ public class GameManager : MonoBehaviour
         maxHealth = 100;
         health = maxHealth;
         totalEpvLevel = 0;
-
         gameTime = 0;
         isLive = true;
 
         player.gameObject.SetActive(true);
         uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
-
+        
         Resume();
-
+        player.anim.SetBool("Live", true);
         AudioManager.instance.PlayBgm(true);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
     }
@@ -157,23 +156,18 @@ public class GameManager : MonoBehaviour
 
     IEnumerator GameOverRoutine()
     {
-        isLive = false;
+        enemyCleaner.SetActive(true);
 
         yield return new WaitForSeconds(1.0f);
-        
-        // 애니메이션 초기화
-        player.ResetAnim();
-
-        // 재시작
-        GameStart(playerId);
+       
         
 
-        /*uiResult.gameObject.SetActive(true);
+        uiResult.gameObject.SetActive(true);
         uiResult.Lose();
         Stop();
 
         AudioManager.instance.PlayBgm(false);
-        AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);*/
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);
     }
 
     public void GameVictory()
@@ -200,7 +194,7 @@ public class GameManager : MonoBehaviour
 
     public void GameRetry()
     {
-        SceneManager.LoadScene(0);
+        Retry();
     }
 
     public void GameQuit()
@@ -242,6 +236,31 @@ public class GameManager : MonoBehaviour
         isLive = false;
         Time.timeScale = 0;
         uiJoy.localScale = Vector3.zero;
+    }
+
+    public void Retry()
+    {
+        player.anim.SetBool("Live", true);
+        maxHealth = 100;
+        health = maxHealth;
+        gameTime = 0;
+        player.transform.position = Vector3.zero;
+        totalEpvLevel = 0;
+        level=0;
+        kill = 0;
+        exp = 0;
+        player.gameObject.SetActive(true);
+        for (int index = 2; index < player.transform.childCount; index++)
+        {
+            player.transform.GetChild(index).gameObject.SetActive(true);
+        }
+        weapon.count= 0;
+        enemyCleaner.SetActive(false);
+        Resume();
+
+        uiResult.gameObject.SetActive(false);
+        AudioManager.instance.PlayBgm(true);
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
     }
     public void Resume()
     {
