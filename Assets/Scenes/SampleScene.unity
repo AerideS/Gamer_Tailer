@@ -1174,8 +1174,7 @@ MonoBehaviour:
   animCon:
   - {fileID: 9100000, guid: 56f1be874b91de146bb1b04ce036219e, type: 2}
   - {fileID: 22100000, guid: 1e1e5fea9c9915144990642fcdb35ab9, type: 2}
-  hitCount: 0
-  anim: {fileID: 0}
+  gameManager: {fileID: 974402431}
 --- !u!114 &169341576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34896,13 +34895,11 @@ MonoBehaviour:
   uiResult: {fileID: 1963359934}
   enemyCleaner: {fileID: 61439678}
   levelUp: {fileID: 26527146}
-  idf: 
-  totalEpvLevel: 0
-  avgEpvLevel: 0
-  totalAliveTime: 0
-  avgAliveTime: 0
-  hitCount: 0
   stageIndex: 0
+  avgEpvLevel: 0
+  avgAliveTime: 0
+  avgHitCount: 0
+  hitCount: 0
 --- !u!4 &974402432
 Transform:
   m_ObjectHideFlags: 0

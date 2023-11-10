@@ -12,12 +12,12 @@ public class Player : MonoBehaviour
     public Hand[] hands;
     public RuntimeAnimatorController[] animCon;
 
-    // 히트 카운트
-    public int hitCount;
+    // GameManager
+    public GameManager gameManager;
 
     Rigidbody2D rigid;
     SpriteRenderer spriter;
-    public Animator anim;
+    Animator anim;
 
     void Awake()
     {
@@ -26,11 +26,8 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         scanner = GetComponent<Scanner>();
         hands = GetComponentsInChildren<Hand>(true);
-
-        hitCount = 0; // 히트 카운트 초기화
     }
 
-    // 애니메이션 리셋 함수
     public void ResetAnim()
     {
         anim.ResetTrigger("Dead");
@@ -88,12 +85,11 @@ public class Player : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
+        gameManager.hitCount++;
         if (!GameManager.instance.isLive)
             return;
-
-        // 피해 데미지
         GameManager.instance.health -= Time.deltaTime * 1000;
-        hitCount++;
+
         if (GameManager.instance.health<0)
         {
             for(int index = 2; index < transform.childCount; index++)

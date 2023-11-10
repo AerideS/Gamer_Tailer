@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     [Header("# Game Control")]
     public bool isLive;
     public float gameTime;
-    public float maxGameTime = 2 * 10f;
+    public float maxGameTime = 1.2f * 10f;
     public GameObject[] Stages;
 
     [Header("# Player Info")]
@@ -49,19 +49,25 @@ public class GameManager : MonoBehaviour
     public Transform uiJoy;
     public Result uiResult;
     public GameObject enemyCleaner;
+
     // 평균 레벨을 가져오기 위해
     public LevelUp levelUp;
 
     [Header("# 학습을 위해 저장할 데이터")]
-    public string idf;
-    public float totalEpvLevel;
-    public float avgEpvLevel;
-    public float totalAliveTime;
-    public float avgAliveTime;
-    public int hitTime;
-    public static int tryCount = 1;
+    public static bool isFirst = true;
+    public static float totalEpvLevel;
+    public static float totalAliveTime;
+    public static int totalHitCount;
+    public static int totaltryCount;
+    public static string idf;
+    public static int stageStaticIndex;
+    public static bool isStageFirst = true;
+
     public int stageIndex;
-    
+    public float avgEpvLevel;
+    public float avgAliveTime;
+    public int avgHitCount;
+    public int hitCount;
 
     string makeIdentifier()
     {
@@ -89,9 +95,9 @@ public class GameManager : MonoBehaviour
             .Collection(randomChars).Document(stageIndex.ToString());
         Dictionary<string, object> dat = new Dictionary<string, object>
 {
-            { "hitCount", player.hitCount },
+            { "avgHitCount", avgHitCount },
             { "stageIndex", stageIndex },
-            {"tryCount", tryCount },
+            {"totaltryCount", totaltryCount },
             {"avgAliveTime", avgAliveTime},
             {"avgEpvLevel", avgEpvLevel }
 };
@@ -103,6 +109,7 @@ public class GameManager : MonoBehaviour
         return;
     }
 
+    // 서버통신 함수
     private void ConnectToTcpServer()
     {
         try
@@ -117,13 +124,36 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // DB 사용자 ID
-        idf = makeIdentifier();
+
         instance = this;
         Application.targetFrameRate = 60;
 
-        // totalAliveTime 초기화
-        totalAliveTime = 0;
+        // 맞은 횟수 초기화
+        hitCount = 0;
+
+        if (isFirst)
+        {
+            // DB 사용자 ID 할당
+            idf = makeIdentifier();
+
+            // 스테이지 클리어까지 총 생존 시간의 합 초기화
+            totalAliveTime = 0;
+            
+            // 스테이지 클리어까지 총  장비 레벨의 합 초기화
+            totalEpvLevel = 0;
+
+            // 스테이지 클리어까지 총 맞은 횟수 초기화
+            totalHitCount = 0;
+
+            // 스테이지 클리어까지 총 시도 횟수 초기화
+            totaltryCount = 1;
+        }
+
+        if(isStageFirst)
+        {
+            stageStaticIndex = 0;
+            isStageFirst = false;
+        }
 
         // 서버 연결
         ConnectToTcpServer();
@@ -131,10 +161,10 @@ public class GameManager : MonoBehaviour
 
     public void GameStart(int id)
     {
+        if(stageStaticIndex == 0) { 
         playerId = id;
         maxHealth = 100;
         health = maxHealth;
-        totalEpvLevel = 0;
 
         gameTime = 0;
         isLive = true;
@@ -146,12 +176,28 @@ public class GameManager : MonoBehaviour
 
         AudioManager.instance.PlayBgm(true);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
+            }
     }
 
     public void GameOver()
     {
-        tryCount++;
+        // 이제부터는 다회차
+        isFirst = false;
+
+        // 총 시도 횟수 더하기
+        totaltryCount++;
+        // 총 생존 시간 더하기
         totalAliveTime += gameTime;
+
+        // 장비 평균레벨 구하기
+        foreach (Item item in levelUp.items)
+        {
+            totalEpvLevel += item.level;
+        }
+
+        // 총 피격 횟수 구하기
+        totalHitCount += hitCount;
+
         StartCoroutine(GameOverRoutine());
     }
 
@@ -159,14 +205,11 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
 
-        yield return new WaitForSeconds(1.0f);
-        
-        // 애니메이션 초기화
-        player.ResetAnim();
+        uiResult.gameObject.SetActive(true);
 
-        // 재시작
-        GameStart(playerId);
-        
+        yield return new WaitForSeconds(0.1f);
+        GameRetry();
+
 
         /*uiResult.gameObject.SetActive(true);
         uiResult.Lose();
@@ -179,7 +222,6 @@ public class GameManager : MonoBehaviour
     public void GameVictory()
     {
         StartCoroutine(GameVictoryRoutine());
-
     }
 
     IEnumerator GameVictoryRoutine()
@@ -252,9 +294,10 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
-        // titalAliveTime, avgAliveTime 초기화 후 데이터 쓰기
-        totalAliveTime = gameTime;
-        avgAliveTime = totalAliveTime / tryCount;
+        // 총 시도 횟수 더하기
+        totaltryCount++;
+        // 총 생존 시간 더하기
+        totalAliveTime += gameTime;
 
         // 장비 평균레벨 구하기
         foreach (Item item in levelUp.items)
@@ -262,11 +305,17 @@ public class GameManager : MonoBehaviour
             totalEpvLevel += item.level;
         }
 
-        avgEpvLevel = totalEpvLevel / levelUp.items.Length;
+        // 총 피격 횟수 더하기
+        totalHitCount += hitCount;
+
+        // 스테이지 클리어까지 평균 생존 시간
+        avgAliveTime = totalAliveTime / totaltryCount;
+        // 스테이지 클리어까지 평균 장비 레벨
+        avgEpvLevel = totalEpvLevel / levelUp.items.Length / totaltryCount;
+        // 스테이지 클리어까지 평균 공격받은 횟수
+        avgHitCount = totalHitCount / totaltryCount;
 
         writeData(idf, stageIndex);
-
-        
 
         //스테이지 변경
         if (stageIndex < Stages.Length)
@@ -278,16 +327,13 @@ public class GameManager : MonoBehaviour
             player.gameObject.SetActive(true);
             enemyCleaner.gameObject.SetActive(false);
             gameTime = 0;
-            maxGameTime = stageIndex * 2 * maxGameTime;
+            maxGameTime = 1.2f * maxGameTime;
             player.transform.position = Vector3.zero;
-
 
             Resume();
             AudioManager.instance.PlayBgm(true);
             AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
         }
-
-
     }
 
 
