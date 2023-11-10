@@ -122,6 +122,9 @@ public class GameManager : MonoBehaviour
         instance = this;
         Application.targetFrameRate = 60;
 
+        // totalAliveTime 초기화
+        totalAliveTime = 0;
+
         // 서버 연결
         ConnectToTcpServer();
     }
@@ -131,8 +134,10 @@ public class GameManager : MonoBehaviour
         playerId = id;
         maxHealth = 100;
         health = maxHealth;
-        totalAliveTime = 0;
         totalEpvLevel = 0;
+
+        gameTime = 0;
+        isLive = true;
 
         player.gameObject.SetActive(true);
         uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
@@ -154,14 +159,21 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(1.0f);
+        
+        // 애니메이션 초기화
+        player.ResetAnim();
 
-        uiResult.gameObject.SetActive(true);
+        // 재시작
+        GameStart(playerId);
+        
+
+        /*uiResult.gameObject.SetActive(true);
         uiResult.Lose();
         Stop();
 
         AudioManager.instance.PlayBgm(false);
-        AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);*/
     }
 
     public void GameVictory()

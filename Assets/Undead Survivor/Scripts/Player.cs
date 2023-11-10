@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 
     Rigidbody2D rigid;
     SpriteRenderer spriter;
-    Animator anim;
+    public Animator anim;
 
     void Awake()
     {
@@ -28,6 +28,13 @@ public class Player : MonoBehaviour
         hands = GetComponentsInChildren<Hand>(true);
 
         hitCount = 0; // 히트 카운트 초기화
+    }
+
+    // 애니메이션 리셋 함수
+    public void ResetAnim()
+    {
+        anim.ResetTrigger("Dead");
+        anim.SetTrigger("Stand");
     }
 
     private void OnEnable()
@@ -83,7 +90,9 @@ public class Player : MonoBehaviour
     {
         if (!GameManager.instance.isLive)
             return;
-        GameManager.instance.health -= Time.deltaTime * 10;
+
+        // 피해 데미지
+        GameManager.instance.health -= Time.deltaTime * 1000;
         hitCount++;
         if (GameManager.instance.health<0)
         {
