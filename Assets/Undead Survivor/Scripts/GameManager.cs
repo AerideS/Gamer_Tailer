@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
 {
     // DB instances, number of data.
     FirebaseFirestore db;
-/*    FirebaseDatabase db;
-    DatabaseReference m_Reference;*/
+    // FirebaseDatabase db;
+    DatabaseReference m_Reference;
 
     // TcpClient Socket.
     private TcpClient socketConnection;
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
     public int level;
     public int kill;
     public int exp;
-    public int[] nextExp = { 10, 30, 60, 100, 150, 210, 280, 360, 450, 600 };
+    public int[] nextExp = { 10, 30, 90, 270, 810, 2430, 7290, 21870 };
 
     [Header("# Game Object")]
     public Player player;
@@ -112,31 +112,31 @@ public class GameManager : MonoBehaviour
     void writeData(string randomChars, int stageIndex)
     {
         // DB Initialize
-        db = FirebaseFirestore.DefaultInstance;
-        // DB Write
-        DocumentReference docRef = db
-            .Collection(("data")).Document(randomChars)
-            .Collection(randomChars).Document(stageIndex.ToString());
-        Dictionary<string, object> dat = new Dictionary<string, object>
-        {
-                    { "avgHitCount", avgHitCount },
-                    { "stageIndex", stageIndex },
-                    {"totaltryCount", totaltryCount },
-                    {"avgAliveTime", avgAliveTime},
-                    {"avgEpvLevel", avgEpvLevel }
-        };
-        docRef.SetAsync(dat).ContinueWithOnMainThread(task =>
-        {
-            // Data Count +1
+        /*        db = FirebaseFirestore.DefaultInstance;
+                // DB Write
+                DocumentReference docRef = db
+                    .Collection(("data")).Document(randomChars)
+                    .Collection(randomChars).Document(stageIndex.ToString());
+                Dictionary<string, object> dat = new Dictionary<string, object>
+                {
+                            { "avgHitCount", avgHitCount },
+                            { "stageIndex", stageIndex },
+                            {"totaltryCount", totaltryCount },
+                            {"avgAliveTime", avgAliveTime},
+                            {"avgEpvLevel", avgEpvLevel }
+                };
+                docRef.SetAsync(dat).ContinueWithOnMainThread(task =>
+                {
+                    // Data Count +1
 
-            Debug.Log(string.Format("stage count : {0}", stageStaticIndex));
-        });
+                    Debug.Log(string.Format("stage count : {0}", stageStaticIndex));
+                });*/
 
-/*        m_Reference = FirebaseDatabase.DefaultInstance.RootReference;
+        m_Reference = FirebaseDatabase.DefaultInstance.RootReference;
         Data data = new Data(avgHitCount, stageIndex, totaltryCount, avgAliveTime, avgEpvLevel);
         string json = JsonUtility.ToJson(data);
 
-        m_Reference.Child("data").Child(idf).SetRawJsonValueAsync(json);*/
+        m_Reference.Child("data").Child(idf).Child(stageStaticIndex.ToString()).SetRawJsonValueAsync(json);
         return;
     }
 
@@ -385,6 +385,8 @@ public class GameManager : MonoBehaviour
         totaltryCount = 1;
 
         writeData(idf, stageIndex);
+
+        health = maxHealth;
 
         if (stageStaticIndex == 3)
         {

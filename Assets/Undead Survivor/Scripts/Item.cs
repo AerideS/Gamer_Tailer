@@ -49,8 +49,6 @@ public class Item : MonoBehaviour
         
     }
 
-
-
     public void OnClick()
     {
         switch (data.itemType)

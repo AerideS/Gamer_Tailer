@@ -6758,6 +6758,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 1
+      - m_Target: {fileID: 26527142}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 0
 --- !u!114 &359195060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58507,11 +58519,11 @@ MonoBehaviour:
     spriteType: 2
     health: 100
     speed: 2.4
-  - spawnTime: 0.1
+  - spawnTime: 0.2
     spriteType: 3
     health: 50
     speed: 2.8
-  - spawnTime: 0.1
+  - spawnTime: 0.2
     spriteType: 4
     health: 50
     speed: 3
@@ -58523,7 +58535,7 @@ MonoBehaviour:
     spriteType: 6
     health: 150
     speed: 3
-  - spawnTime: 0.1
+  - spawnTime: 0.2
     spriteType: 7
     health: 100
     speed: 3
