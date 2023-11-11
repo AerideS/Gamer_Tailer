@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     [Header("# Game Control")]
     public bool isLive;
     public float gameTime;
-    public float maxGameTime = 1.2f * 10f;
+    public float maxGameTime;
     public GameObject[] Stages;
 
     [Header("# Player Info")]
@@ -74,6 +74,8 @@ public class GameManager : MonoBehaviour
     public float avgAliveTime;
     public int avgHitCount;
     public int hitCount;
+
+    public float[] timeRange = { 30f, 45f, 60f, 75f };
 
     string makeIdentifier()
     {
@@ -183,7 +185,12 @@ public class GameManager : MonoBehaviour
         if(isStageFirst)
         {
             stageStaticIndex = 0;
+            maxGameTime = timeRange[stageStaticIndex];
             isStageFirst = false;
+        }
+        else
+        {
+            maxGameTime = timeRange[stageStaticIndex];
         }
 
         // Connecting to a Server.
@@ -226,7 +233,6 @@ public class GameManager : MonoBehaviour
 
             enemyCleaner.gameObject.SetActive(false);
             gameTime = 0;
-            maxGameTime = Mathf.Pow(1.5f, stageIndex+1) * maxGameTime;
             player.transform.position = Vector3.zero;
 
             Resume();
@@ -400,12 +406,12 @@ public class GameManager : MonoBehaviour
         {
             Stages[stageIndex].SetActive(false);
             stageIndex++; stageStaticIndex++;
+            maxGameTime = timeRange[stageStaticIndex];
             Stages[stageIndex].SetActive(true);
             uiResult.gameObject.SetActive(false);
             player.gameObject.SetActive(true);
             enemyCleaner.gameObject.SetActive(false);
             gameTime = 0;
-            maxGameTime = 1.2f * maxGameTime;
             player.transform.position = Vector3.zero;
 
             Resume();
