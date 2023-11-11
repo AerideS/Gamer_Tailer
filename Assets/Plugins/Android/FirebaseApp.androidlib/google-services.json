@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "277644718565",
+    "project_id": "gamer-tailor",
+    "storage_bucket": "gamer-tailor.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277644718565:android:060702499fde76c6aeff0c",
+        "android_client_info": {
+          "package_name": "com.Gamer.UndeadSurvivor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0EI7cBbfVdsaj8c5OQld8ev2kW2nJnyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

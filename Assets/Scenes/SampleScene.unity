@@ -6757,7 +6757,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &359195060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34875,7 +34875,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLive: 0
   gameTime: 0
-  maxGameTime: 1
+  maxGameTime: 30
   Stages:
   - {fileID: 1934035695}
   - {fileID: 2024083865}
@@ -58495,37 +58495,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPoint: []
   spawnData:
-  - spawnTime: 1.2
+  - spawnTime: 0.1
     spriteType: 0
-    health: 10
+    health: 50
     speed: 1.5
-  - spawnTime: 1.2
+  - spawnTime: 0.2
     spriteType: 1
-    health: 15
-    speed: 2
-  - spawnTime: 1.2
+    health: 50
+    speed: 3
+  - spawnTime: 0.2
     spriteType: 2
-    health: 20
+    health: 100
     speed: 2.4
-  - spawnTime: 1
+  - spawnTime: 0.1
     spriteType: 3
-    health: 25
+    health: 50
     speed: 2.8
-  - spawnTime: 1
+  - spawnTime: 0.1
     spriteType: 4
-    health: 30
+    health: 50
     speed: 3
-  - spawnTime: 0.7
+  - spawnTime: 0.2
     spriteType: 5
-    health: 35
-    speed: 3
-  - spawnTime: 0.7
+    health: 100
+    speed: 2
+  - spawnTime: 0.2
     spriteType: 6
-    health: 35
+    health: 150
     speed: 3
-  - spawnTime: 0.8
+  - spawnTime: 0.1
     spriteType: 7
-    health: 40
+    health: 100
     speed: 3
   levelTime: 0
 --- !u!1 &1500431502

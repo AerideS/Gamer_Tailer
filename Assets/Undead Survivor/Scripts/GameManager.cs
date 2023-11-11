@@ -4,13 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Firebase.Firestore 사용
+// Firebase.Firestore
 using Firebase.Firestore;
 using Firebase.Extensions;
 using System.Threading.Tasks;
 using Unity.Collections.LowLevel.Unsafe;
 
-// 서버 사용
+// Firebase Realtime Database
+using Firebase;
+using Firebase.Database;
+using Firebase.Extensions;
+
+// Using Server
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -19,11 +24,12 @@ using System.Threading;
 
 public class GameManager : MonoBehaviour
 {
-    // DB 인스턴스, 자료의 개수
+    // DB instances, number of data.
     FirebaseFirestore db;
-    int data_count;
+/*    FirebaseDatabase db;
+    DatabaseReference m_Reference;*/
 
-    // TcpClient Socket
+    // TcpClient Socket.
     private TcpClient socketConnection;
 
     public static GameManager instance;
@@ -50,7 +56,7 @@ public class GameManager : MonoBehaviour
     public Result uiResult;
     public GameObject enemyCleaner;
 
-    // 평균 레벨을 가져오기 위해
+    // To get the average level.
     public LevelUp levelUp;
 
     [Header("# 학습을 위해 저장할 데이터")]
@@ -71,7 +77,7 @@ public class GameManager : MonoBehaviour
 
     string makeIdentifier()
     {
-        // 식별자 생성
+        // Create Identifier.
         int length = 8;
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         System.Random random = new System.Random();
@@ -84,32 +90,57 @@ public class GameManager : MonoBehaviour
         return new string(randomChars);
     }
 
-    // DB 쓰기 함수
+    public class Data
+    {
+        public int avgHitCount;
+        public int stageIndex;
+        public int totalTryCount;
+        public float avgEpvLevel;
+        public float totalAliveTime;
+
+        public Data(int avgHitCount, int stageIndex, int totalTryCount, float avgEpvLevel, float totalAliveTIme)
+        {
+            this.avgHitCount = avgHitCount;
+            this.stageIndex = stageIndex;
+            this.totalTryCount = totalTryCount;
+            this.avgEpvLevel = avgEpvLevel;
+            this.totalAliveTime = totalAliveTIme;
+        }
+    }
+
+    // DB write function
     void writeData(string randomChars, int stageIndex)
     {
-        // DB 초기화
+        // DB Initialize
         db = FirebaseFirestore.DefaultInstance;
-        // DB 쓰기
+        // DB Write
         DocumentReference docRef = db
             .Collection(("data")).Document(randomChars)
             .Collection(randomChars).Document(stageIndex.ToString());
         Dictionary<string, object> dat = new Dictionary<string, object>
-{
-            { "avgHitCount", avgHitCount },
-            { "stageIndex", stageIndex },
-            {"totaltryCount", totaltryCount },
-            {"avgAliveTime", avgAliveTime},
-            {"avgEpvLevel", avgEpvLevel }
-};
-        docRef.SetAsync(dat).ContinueWithOnMainThread(task => {
-            // 데이터 카운트 +1
-            Debug.Log(string.Format("data_count : {0}", data_count));
+        {
+                    { "avgHitCount", avgHitCount },
+                    { "stageIndex", stageIndex },
+                    {"totaltryCount", totaltryCount },
+                    {"avgAliveTime", avgAliveTime},
+                    {"avgEpvLevel", avgEpvLevel }
+        };
+        docRef.SetAsync(dat).ContinueWithOnMainThread(task =>
+        {
+            // Data Count +1
+
+            Debug.Log(string.Format("stage count : {0}", stageStaticIndex));
         });
 
+/*        m_Reference = FirebaseDatabase.DefaultInstance.RootReference;
+        Data data = new Data(avgHitCount, stageIndex, totaltryCount, avgAliveTime, avgEpvLevel);
+        string json = JsonUtility.ToJson(data);
+
+        m_Reference.Child("data").Child(idf).SetRawJsonValueAsync(json);*/
         return;
     }
 
-    // 서버통신 함수
+    // Server communication function.
     private void ConnectToTcpServer()
     {
         try
@@ -128,24 +159,24 @@ public class GameManager : MonoBehaviour
         instance = this;
         Application.targetFrameRate = 60;
 
-        // 맞은 횟수 초기화
+        // Initialize the number of hits.
         hitCount = 0;
 
         if (isFirst)
         {
-            // DB 사용자 ID 할당
+            // DB User Id.
             idf = makeIdentifier();
 
-            // 스테이지 클리어까지 총 생존 시간의 합 초기화
+            // Initialize the sum of total survival time to stage clear.
             totalAliveTime = 0;
-            
-            // 스테이지 클리어까지 총  장비 레벨의 합 초기화
+
+            // Initialize sum of total equipment levels until stage clear.
             totalEpvLevel = 0;
 
-            // 스테이지 클리어까지 총 맞은 횟수 초기화
+            // Initialize the number of shots to stage clear.
             totalHitCount = 0;
 
-            // 스테이지 클리어까지 총 시도 횟수 초기화
+            // Initialize the total number of attempts to clear the stage.
             totaltryCount = 1;
         }
 
@@ -155,7 +186,7 @@ public class GameManager : MonoBehaviour
             isStageFirst = false;
         }
 
-        // 서버 연결
+        // Connecting to a Server.
         ConnectToTcpServer();
     }
 
@@ -171,7 +202,7 @@ public class GameManager : MonoBehaviour
             isLive = true;
 
             player.gameObject.SetActive(true);
-            uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
+            uiLevelUp.Select(playerId % 2);    // Temporary script (first character selection).
 
             Resume();
 
@@ -191,11 +222,11 @@ public class GameManager : MonoBehaviour
             Stages[stageIndex].SetActive(true);
             player.gameObject.SetActive(true);
 
-            uiLevelUp.Select(playerId % 2);    //임시 스크립트 (첫번째 캐릭터 선택)
+            uiLevelUp.Select(playerId % 2);    // Temporary script (first character selection).
 
             enemyCleaner.gameObject.SetActive(false);
             gameTime = 0;
-            maxGameTime = Mathf.Pow(1.2f, stageIndex+1) * maxGameTime;
+            maxGameTime = Mathf.Pow(1.5f, stageIndex+1) * maxGameTime;
             player.transform.position = Vector3.zero;
 
             Resume();
@@ -206,21 +237,21 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        // 이제부터는 다회차
+        // From now on, multi try.
         isFirst = false;
 
-        // 총 시도 횟수 더하기
+        // Add the total number of attempts.
         totaltryCount++;
-        // 총 생존 시간 더하기
+        // Total survival time plus.
         totalAliveTime += gameTime;
 
-        // 장비 평균레벨 구하기
+        // Get the average level of equipment.
         foreach (Item item in levelUp.items)
         {
             totalEpvLevel += item.level;
         }
 
-        // 총 피격 횟수 구하기
+        // Get the total number of hits.
         totalHitCount += hitCount;
 
         StartCoroutine(GameOverRoutine());
@@ -242,7 +273,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void GameVictory()
-    {
+    {        
         StartCoroutine(GameVictoryRoutine());
     }
 
@@ -250,13 +281,18 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         enemyCleaner.SetActive(true);
-
-
+       
         yield return new WaitForSeconds(0.3f);
-
-        uiResult.gameObject.SetActive(true);
-        uiResult.Win();
-        Stop();
+        if (stageIndex == Stages.Length - 1)
+        {
+            GameRetry();
+        }
+        else
+        {
+            uiResult.gameObject.SetActive(true);
+            uiResult.Win();
+            Stop();
+        }
 
         AudioManager.instance.PlayBgm(false);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Win);
@@ -320,28 +356,28 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
-        // 총 시도 횟수 더하기
+        // Add the total number of attempts.
         totaltryCount++;
-        // 총 생존 시간 더하기
+        // Total survival time plus.
         totalAliveTime += gameTime;
 
-        // 장비 평균레벨 구하기
+        // Find the average level of equipment.
         foreach (Item item in levelUp.items)
         {
             totalEpvLevel += item.level;
         }
 
-        // 총 피격 횟수 더하기
+        // Add the total number of hits
         totalHitCount += hitCount;
 
-        // 스테이지 클리어까지 평균 생존 시간
+        // Average survival time to stage clear.
         avgAliveTime = totalAliveTime / totaltryCount;
-        // 스테이지 클리어까지 평균 장비 레벨
+        // Average equipment level to stage clear.
         avgEpvLevel = totalEpvLevel / levelUp.items.Length / totaltryCount;
-        // 스테이지 클리어까지 평균 공격받은 횟수
+        // Average number of attacks to stage clear.
         avgHitCount = totalHitCount / totaltryCount;
 
-        // 다음 라운드에서 모두 초기화
+        // Initialize all in the next round.
         totalHitCount = 0;
         totalAliveTime = 0;
         totalEpvLevel = 0;
@@ -350,15 +386,15 @@ public class GameManager : MonoBehaviour
 
         writeData(idf, stageIndex);
 
-        if(stageStaticIndex == 3)
+        if (stageStaticIndex == 3)
         {
             stageStaticIndex = 0;
             isStageFirst = true;
             return;
         }
 
-        //스테이지 변경
-        if (stageStaticIndex <= 2)
+        // Stage Change.
+        if (stageStaticIndex <= 3)
         {
             Stages[stageIndex].SetActive(false);
             stageIndex++; stageStaticIndex++;

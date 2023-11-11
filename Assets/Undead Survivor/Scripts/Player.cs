@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
     private void OnEnable()
     {
         speed *= Character.Speed;
-        anim.runtimeAnimatorController = animCon[GameManager.instance.playerId];
+        anim.runtimeAnimatorController = animCon[GameManager.instance.playerId % 2];
     }
 
     /*    void Update()
@@ -88,7 +88,7 @@ public class Player : MonoBehaviour
         gameManager.hitCount++;
         if (!GameManager.instance.isLive)
             return;
-        GameManager.instance.health -= Time.deltaTime * 1000;
+        GameManager.instance.health -= Time.deltaTime * 100;
 
         if (GameManager.instance.health<0)
         {
