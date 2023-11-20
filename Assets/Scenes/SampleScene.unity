@@ -58515,19 +58515,19 @@ MonoBehaviour:
   - spawnTime: 0.4
     spriteType: 0
     health: 50
-    speed: 3.7
+    speed: 3.6
   - spawnTime: 0.4
     spriteType: 1
     health: 50
-    speed: 3.8
+    speed: 3.7
   - spawnTime: 0.4
     spriteType: 2
     health: 55
-    speed: 3.8
+    speed: 3.7
   - spawnTime: 0.4
     spriteType: 3
-    health: 60
-    speed: 3.9
+    health: 55
+    speed: 3.8
   - spawnTime: 0.4
     spriteType: 4
     health: 60

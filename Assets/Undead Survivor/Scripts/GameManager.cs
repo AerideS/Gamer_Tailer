@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
     public int avgHitCount;
     public int hitCount;
 
-    public float[] timeRange = { 30f, 45f, 60f, 75f };
+    public float[] timeRange = { 30f, 45f, 60f, 75 };
 
     string makeIdentifier()
     {
@@ -83,13 +83,13 @@ public class GameManager : MonoBehaviour
         int length = 8;
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         System.Random random = new System.Random();
-        char[] randomChars = new char[length];
+        char[] randomChars = new char[length+2];
 
         for (int i = 0; i < length; i++)
         {
             randomChars[i] = chars[random.Next(chars.Length)];
         }
-        return new string(randomChars);
+        return  new string(randomChars);
     }
 
     public class Data
@@ -98,15 +98,15 @@ public class GameManager : MonoBehaviour
         public int stageIndex;
         public int totalTryCount;
         public float avgEpvLevel;
-        public float totalAliveTime;
+        public float avgAliveTime;
 
-        public Data(int avgHitCount, int stageIndex, int totalTryCount, float avgEpvLevel, float totalAliveTIme)
+        public Data(int avgHitCount, int stageIndex, int totalTryCount, float avgEpvLevel, float avgAliveTime)
         {
             this.avgHitCount = avgHitCount;
-            this.stageIndex = stageIndex;
+            this.stageIndex = stageStaticIndex;
             this.totalTryCount = totalTryCount;
             this.avgEpvLevel = avgEpvLevel;
-            this.totalAliveTime = totalAliveTIme;
+            this.avgAliveTime = avgAliveTime;
         }
     }
 
@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
                 });*/
 
         m_Reference = FirebaseDatabase.DefaultInstance.RootReference;
-        Data data = new Data(avgHitCount, stageIndex, totaltryCount, avgAliveTime, avgEpvLevel);
+        Data data = new Data(avgHitCount, stageIndex, totaltryCount, avgEpvLevel, avgAliveTime);
         string json = JsonUtility.ToJson(data);
 
         m_Reference.Child("data").Child(idf).Child(stageStaticIndex.ToString()).SetRawJsonValueAsync(json);
@@ -362,8 +362,6 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
-        // Add the total number of attempts.
-        totaltryCount++;
         // Total survival time plus.
         totalAliveTime += gameTime;
 
@@ -383,6 +381,10 @@ public class GameManager : MonoBehaviour
         // Average number of attacks to stage clear.
         avgHitCount = totalHitCount / totaltryCount;
 
+        Debug.Log(string.Format("{0} {1}", totalAliveTime, avgAliveTime));
+
+        writeData(idf, stageIndex);
+
         // Initialize all in the next round.
         totalHitCount = 0;
         totalAliveTime = 0;
@@ -390,7 +392,7 @@ public class GameManager : MonoBehaviour
         totalHitCount = 0;
         totaltryCount = 1;
 
-        writeData(idf, stageIndex);
+
 
         health = maxHealth;
 
