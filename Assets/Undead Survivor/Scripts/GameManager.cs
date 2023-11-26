@@ -19,8 +19,10 @@ using Firebase.Extensions;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Diagnostics.Tracing;
 
-
+// Using Encoding
+using System.Text;
 
 public class GameManager : MonoBehaviour
 {
@@ -52,7 +54,6 @@ public class GameManager : MonoBehaviour
     public Player player;
     public PoolManager pool;
     public LevelUp uiLevelUp;
-    public Transform uiJoy;
     public Result uiResult;
     public GameObject enemyCleaner;
 
@@ -77,19 +78,27 @@ public class GameManager : MonoBehaviour
 
     public float[] timeRange = { 30f, 45f, 60f, 75 };
 
+
+    [Header("변수 조절값")]
+    private const float SPEEDV = 0.4f;
+    private const float SPAWNV = 0.2f;
+    private const float DAMAGEV = 0.2f;
+    private const float HPV = 0.2f;
+    private const float MONSPEEDV = 0.2f;
+
     string makeIdentifier()
     {
         // Create Identifier.
         int length = 8;
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         System.Random random = new System.Random();
-        char[] randomChars = new char[length+2];
+        char[] randomChars = new char[length + 2];
 
         for (int i = 0; i < length; i++)
         {
             randomChars[i] = chars[random.Next(chars.Length)];
         }
-        return  new string(randomChars);
+        return new string(randomChars);
     }
 
     public class Data
@@ -147,17 +156,46 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            socketConnection = new TcpClient("127.0.0.1", 8080);    
+            socketConnection = new TcpClient("127.0.0.1", 8080);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.Log("On client connect exception " + e);
         }
     }
 
+    // Send precent data to Server and get the predict of next stage.
+    private void SendDataToServer()
+    {
+        try
+        {
+            // Sending data part
+            NetworkStream stream = socketConnection.GetStream();
+
+            string data = stageIndex.ToString() + ", " + avgEpvLevel.ToString() + ", " + avgAliveTime.ToString() + ", " + avgHitCount.ToString() + ", " + totaltryCount.ToString();
+
+            byte[] bytesToSend = Encoding.UTF8.GetBytes(data);
+
+            stream.Write(bytesToSend, 0, bytesToSend.Length);
+            Debug.Log("Data send: " + data);
+
+            // Recieve data part
+            byte[] buffer = new byte[1024];
+            int bytesRead = stream.Read(buffer, 0, buffer.Length); // read the data from server.
+            string receivedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            string a = receivedData;
+            string cleanedString = a.Replace("[[", "").Replace("]]", ""); // without this line, It will occur error when you run float.pares.
+            float predictValue = float.Parse(cleanedString);
+            Debug.Log(predictValue);
+        }
+        catch(Exception e)
+        {
+            Debug.Log("On client Send exception " + e);
+        }
+    }
+
     void Awake()
     {
-
         instance = this;
         Application.targetFrameRate = 60;
 
@@ -182,7 +220,7 @@ public class GameManager : MonoBehaviour
             totaltryCount = 1;
         }
 
-        if(isStageFirst)
+        if (isStageFirst)
         {
             stageStaticIndex = 0;
             maxGameTime = timeRange[stageStaticIndex];
@@ -192,9 +230,6 @@ public class GameManager : MonoBehaviour
         {
             maxGameTime = timeRange[stageStaticIndex];
         }
-
-        // Connecting to a Server.
-        ConnectToTcpServer();
     }
 
     public void GameStart(int id)
@@ -211,8 +246,9 @@ public class GameManager : MonoBehaviour
             player.gameObject.SetActive(true);
             uiLevelUp.Select(playerId % 2);    // Temporary script (first character selection).
 
-            Resume();
 
+            Resume();
+            pool = Stages[stageStaticIndex].transform.Find("PoolManager").GetComponent<PoolManager>();
             AudioManager.instance.PlayBgm(true);
             AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
         }
@@ -229,7 +265,9 @@ public class GameManager : MonoBehaviour
             Stages[stageIndex].SetActive(true);
             player.gameObject.SetActive(true);
 
+
             uiLevelUp.Select(playerId % 2);    // Temporary script (first character selection).
+            pool = Stages[stageIndex].transform.Find("PoolManager").GetComponent<PoolManager>();
 
             enemyCleaner.gameObject.SetActive(false);
             gameTime = 0;
@@ -279,16 +317,17 @@ public class GameManager : MonoBehaviour
     }
 
     public void GameVictory()
-    {        
+    {
         StartCoroutine(GameVictoryRoutine());
     }
 
     IEnumerator GameVictoryRoutine()
     {
         isLive = false;
-        enemyCleaner.SetActive(true);
-       
+        enemyCleaner.gameObject.SetActive(true);
+
         yield return new WaitForSeconds(0.3f);
+        enemyCleaner.gameObject.SetActive(false);
         if (stageIndex == Stages.Length - 1)
         {
             GameRetry();
@@ -325,7 +364,7 @@ public class GameManager : MonoBehaviour
         if (gameTime > maxGameTime)
         {
             gameTime = maxGameTime;
-            if(stageStaticIndex == 3)
+            if (stageStaticIndex == 3)
             {
                 NextStage();
             }
@@ -351,13 +390,11 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         Time.timeScale = 0;
-        uiJoy.localScale = Vector3.zero;
     }
     public void Resume()
     {
         isLive = true;
         Time.timeScale = 1;
-        uiJoy.localScale = Vector3.one;
     }
 
     public void NextStage()
@@ -384,6 +421,12 @@ public class GameManager : MonoBehaviour
         Debug.Log(string.Format("{0} {1}", totalAliveTime, avgAliveTime));
 
         writeData(idf, stageIndex);
+
+
+        // Connecting to a Server.
+        ConnectToTcpServer();
+        // Send to Server
+        SendDataToServer();
 
         // Initialize all in the next round.
         totalHitCount = 0;
@@ -412,15 +455,112 @@ public class GameManager : MonoBehaviour
             Stages[stageIndex].SetActive(true);
             uiResult.gameObject.SetActive(false);
             player.gameObject.SetActive(true);
-            enemyCleaner.gameObject.SetActive(false);
+            pool = Stages[stageIndex].transform.Find("PoolManager").GetComponent<PoolManager>();
+            //if (pool_m.transform.Find("Bullet 1(Clone)") != null)
+            //{
+            //    pool_m.transform.Find("Bullet 1(Clone)").GetComponent<Bullet>().per = -1;
+            //}
+            if (player.transform.Find("Weapon 1").GetComponent<Weapon>() != null)
+            {
+                Weapon we = player.transform.Find("Weapon 1").GetComponent<Weapon>();
+                we.prefabId = 2;
+                we.Fire();
+            }
             gameTime = 0;
             player.transform.position = Vector3.zero;
-
             Resume();
             AudioManager.instance.PlayBgm(true);
             AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
         }
     }
 
+    void SpeedUserCon(float value)
+    {
+        if (value > 1)
+        {
+            player.speed = player.speed + player.speed * SPEEDV;
+        }
+        else
+        {
+            player.speed = player.speed * (1 - SPEEDV);
+        }
 
+    }
+
+    void SpawnTimeCon(float value)
+    {
+        Spawner spawner = new Spawner();
+        level = Mathf.Min(Mathf.FloorToInt(gameTime / maxGameTime), spawner.spawnData.Length - 1);
+        if (value > 1)
+        {
+            for (int i = 0; i < spawner.spawnData.Length; i++)
+            {
+                spawner.spawnData[i].spawnTime = spawner.spawnData[i].spawnTime + spawner.spawnData[i].spawnTime * SPAWNV;
+            }
+
+        }
+        else
+        {
+            for (int i = 0; i < spawner.spawnData.Length; i++)
+            {
+                spawner.spawnData[i].spawnTime = spawner.spawnData[i].spawnTime * (1 - SPAWNV);
+            }
+        }
+
+    }
+
+    void MONSPCon(float value)
+    {
+        Spawner spawner = new Spawner();
+        level = Mathf.Min(Mathf.FloorToInt(gameTime / maxGameTime), spawner.spawnData.Length - 1);
+        if (value > 1)
+        {
+            for (int i = 0; i < spawner.spawnData.Length; i++)
+            {
+                spawner.spawnData[i].speed = spawner.spawnData[i].speed + spawner.spawnData[i].speed * MONSPEEDV;
+            }
+
+        }
+        else
+        {
+            for (int i = 0; i < spawner.spawnData.Length; i++)
+            {
+                spawner.spawnData[i].speed = spawner.spawnData[i].speed * (1 - MONSPEEDV);
+            }
+
+        }
+
+        //void SpawnTimeCon(float value)
+        //{
+        //    Spawner spawner = new Spawner();
+        //    level = Mathf.Min(Mathf.FloorToInt(gameTime / maxGameTime), spawner.spawnData.Length - 1);
+        //    if (value > 1)
+        //    {
+        //        spawner.spawnData[level].spawnTime = spawner.spawnData[level].spawnTime + spawner.spawnData[level].spawnTime * SPAWNV;
+
+        //    }
+        //    else
+        //    {
+        //        spawner.spawnData[level].spawnTime = spawner.spawnData[level].spawnTime * (1 - SPAWNV);
+        //    }
+
+        //}
+
+        //void SpawnTimeCon(float value)
+        //{
+        //    Spawner spawner = new Spawner();
+        //    level = Mathf.Min(Mathf.FloorToInt(gameTime / maxGameTime), spawner.spawnData.Length - 1);
+        //    if (value > 1)
+        //    {
+        //        spawner.spawnData[level].spawnTime = spawner.spawnData[level].spawnTime + spawner.spawnData[level].spawnTime * SPAWNV;
+
+        //    }
+        //    else
+        //    {
+        //        spawner.spawnData[level].spawnTime = spawner.spawnData[level].spawnTime * (1 - SPAWNV);
+        //    }
+
+        //}
+
+    }
 }

@@ -28,6 +28,12 @@ public class Weapon : MonoBehaviour
         if (!GameManager.instance.isLive)
             return;
 
+        if (GameManager.stageStaticIndex >= 1)
+        {
+            Fire();
+            
+        }
+
         switch (id)
         {
             case 0:
@@ -130,10 +136,13 @@ public class Weapon : MonoBehaviour
             bullet.Translate(bullet.up * 1.5f, Space.World);
 
             bullet.GetComponent<Bullet>().Init(damage, -100,Vector3.zero); // -100 is Infinity Per.
+            
+    
+           
         }
     }
 
-    void Fire()
+    public void Fire()
     {
         if (!player.scanner.nearestTarget)
             return;
@@ -142,11 +151,13 @@ public class Weapon : MonoBehaviour
         Vector3 dir = (targetPso - transform.position).normalized;
         dir = dir.normalized;
 
+        prefabId = 2;
+
         Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
         bullet.position = transform.position;
         bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir);
         bullet.GetComponent<Bullet>().Init(damage, count, dir);
-
+       
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Range);
     }
 
