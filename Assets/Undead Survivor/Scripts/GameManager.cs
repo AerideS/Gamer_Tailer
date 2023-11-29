@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
 
 
             Resume();
-            pool = Stages[stageStaticIndex].transform.Find("PoolManager").GetComponent<PoolManager>();
+  
             AudioManager.instance.PlayBgm(true);
             AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
         }
@@ -267,7 +267,6 @@ public class GameManager : MonoBehaviour
 
 
             uiLevelUp.Select(playerId % 2);    // Temporary script (first character selection).
-            pool = Stages[stageIndex].transform.Find("PoolManager").GetComponent<PoolManager>();
 
             enemyCleaner.gameObject.SetActive(false);
             gameTime = 0;
@@ -455,17 +454,17 @@ public class GameManager : MonoBehaviour
             Stages[stageIndex].SetActive(true);
             uiResult.gameObject.SetActive(false);
             player.gameObject.SetActive(true);
-            pool = Stages[stageIndex].transform.Find("PoolManager").GetComponent<PoolManager>();
+            //pool = Stages[stageIndex].transform.Find("PoolManager").GetComponent<PoolManager>();
             //if (pool_m.transform.Find("Bullet 1(Clone)") != null)
             //{
             //    pool_m.transform.Find("Bullet 1(Clone)").GetComponent<Bullet>().per = -1;
             //}
-            if (player.transform.Find("Weapon 1").GetComponent<Weapon>() != null)
-            {
-                Weapon we = player.transform.Find("Weapon 1").GetComponent<Weapon>();
-                we.prefabId = 2;
-                we.Fire();
-            }
+            //if (player.transform.Find("Weapon 1").GetComponent<Weapon>() != null)
+            //{
+            //    Weapon we = player.transform.Find("Weapon 1").GetComponent<Weapon>();
+            //    we.prefabId = 2;
+            //    we.Fire();
+            //}
             gameTime = 0;
             player.transform.position = Vector3.zero;
             Resume();
